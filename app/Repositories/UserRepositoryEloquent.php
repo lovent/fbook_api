@@ -174,20 +174,14 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function getInterestedBooks($dataSelect = ['*'], $with = [], $officeId = '')
     {
-        if ($this->user->tags) {
-            $tags = explode(',', $this->user->tags);
-
-            return app(Book::class)
-                ->getLatestBooks($dataSelect, $with)
-                ->getBookByOffice($officeId)
-                ->whereIn('category_id', $tags)
-                ->paginate(config('paginate.default'));
-        }
-
-        return app(Book::class)
+        $tags = explode(',', $this->user->tags);
+        $suggestBooks = app(Book::class)
             ->getLatestBooks($dataSelect, $with)
             ->getBookByOffice($officeId)
+            ->whereIn('category_id', $tags)
             ->paginate(config('paginate.default'));
+
+        return $suggestBooks;
     }
 
     public function show($id)
